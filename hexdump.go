@@ -49,6 +49,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	if nWidth < 1 || nWidth > 64 {
+		flag.Usage()
+		fmt.Println("\nerror: Enter a width between 1 and 64")
+		os.Exit(1)
+	}
+
 	infile, err := os.Open(fName)
 	if err != nil {
 		log.Fatalln("Error reading file: ", err)
