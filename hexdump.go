@@ -14,6 +14,7 @@ var (
 	nWidth int
 	wUsage = "[Optional:] Characters to display"
 	row    = 0
+	s      string
 )
 
 func init() {
@@ -64,6 +65,7 @@ func main() {
 	printHeader(nWidth)
 
 	buf := make([]byte, nWidth)
+	sText := make([]string, nWidth)
 
 	for {
 		c, err := io.ReadFull(infile, buf)
@@ -80,9 +82,18 @@ func main() {
 		fmt.Printf("%04d ", row)
 		row += 1
 
-		for _, b := range bytes {
+		for i, b := range bytes {
 			fmt.Printf("0x%02X ", b)
+
+			if b < 33 || b > 126 {
+				s = "."
+			} else {
+				s = string(b)
+			}
+			sText[i] = s
+
 		}
+		fmt.Printf("%s", sText)
 		fmt.Println()
 	}
 }
