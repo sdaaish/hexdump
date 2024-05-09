@@ -8,25 +8,38 @@ import (
 	"os"
 )
 
+var (
+	fName  string
+	fUsage = "Enter the filename to process"
+	nWidth int
+	wUsage = "[Optional:] Characters to display"
+)
+
+func init() {
+	flag.StringVar(&fName, "file", "", fUsage)
+	flag.StringVar(&fName, "f", "", fUsage+", short form")
+
+	flag.IntVar(&nWidth, "width", 16, wUsage)
+	flag.IntVar(&nWidth, "w", 16, wUsage+", short form.")
+}
+
 func main() {
 
-	filename := flag.String("filename", "", "Enter the filename to process.")
-	width := flag.Int("width", 16, "Enter the width to display.")
 	flag.Parse()
 
-	if filename == nil || *filename == "" {
+	if fName == "" {
 		flag.Usage()
-		fmt.Println("\n", "error: Enter a valid filename.")
+		fmt.Println("\nerror: Enter a valid filename.")
 		os.Exit(1)
 	}
 
-	infile, err := os.Open(*filename)
+	infile, err := os.Open(fName)
 	if err != nil {
 		log.Fatalln("Error reading file: ", err)
 	}
 	defer infile.Close()
 
-	chunkSize := *width
+	chunkSize := nWidth
 
 	// Print a header
 	fmt.Printf("%-5s", "Row")
