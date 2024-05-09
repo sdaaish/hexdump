@@ -13,6 +13,7 @@ var (
 	fUsage = "Enter the filename to process"
 	nWidth int
 	wUsage = "[Optional:] Characters to display"
+	row    = 0
 )
 
 func init() {
@@ -21,6 +22,21 @@ func init() {
 
 	flag.IntVar(&nWidth, "width", 16, wUsage)
 	flag.IntVar(&nWidth, "w", 16, wUsage+", short form.")
+}
+
+func printHeader(width int) {
+
+	// Print a header
+	fmt.Printf("%-5s", "Row")
+	for i := 0; i < width; i++ {
+		fmt.Printf("%04X ", i)
+	}
+	fmt.Println()
+
+	for i := 0; i < width+1; i++ {
+		fmt.Printf("%4s ", "----")
+	}
+	fmt.Println()
 }
 
 func main() {
@@ -39,23 +55,9 @@ func main() {
 	}
 	defer infile.Close()
 
-	chunkSize := nWidth
+	printHeader(nWidth)
 
-	// Print a header
-	fmt.Printf("%-5s", "Row")
-	for i := 0; i < chunkSize; i++ {
-		fmt.Printf("%04X ", i)
-	}
-	fmt.Println()
-
-	for i := 0; i < chunkSize+1; i++ {
-		fmt.Printf("%4s ", "----")
-	}
-	fmt.Println()
-
-	buf := make([]byte, chunkSize)
-
-	row := 0
+	buf := make([]byte, nWidth)
 
 	for {
 		c, err := io.ReadFull(infile, buf)
