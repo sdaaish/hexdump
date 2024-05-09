@@ -1,71 +1,67 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
 )
 
-const chunkSize = 16
-
 func main() {
 
-	fmt.Println("Reading...\n")
+	filename := flag.String("filename", "", "Enter the filename to process.")
+	width := flag.Int("width", 16, "Enter the width to display.")
+	flag.Parse()
 
-	if len(os.Args) < 2 {
-		fmt.Println("error: Enter a valid filename.")
+	if filename == nil || *filename == "" {
+		flag.Usage()
+		fmt.Println("\n", "error: Enter a valid filename.")
 		os.Exit(1)
 	}
 
-	filename := os.Args[1]
-
-	infile, err := os.Open(filename)
+	infile, err := os.Open(*filename)
 	if err != nil {
 		log.Fatalln("Error reading file: ", err)
 	}
 	defer infile.Close()
 
+	chunkSize := *width
+
 	// Print a header
 	fmt.Printf("%-5s", "Row")
-				for i := 0; i < chunkSize; i++ {
-								fmt.Printf("%04X ", i)
-				}
-				fmt.Println()
+	for i := 0; i < chunkSize; i++ {
+		fmt.Printf("%04X ", i)
+	}
+	fmt.Println()
 
-				for i := 0; i < chunkSize+1; i++ {
-								fmt.Printf("%4s ", "----")
-				}
-				fmt.Println()
+	for i := 0; i < chunkSize+1; i++ {
+		fmt.Printf("%4s ", "----")
+	}
+	fmt.Println()
 
-				buf := make([]byte, chunkSize)
+	buf := make([]byte, chunkSize)
 
-				row := 0
+	row := 0
 
-				for {
-								l, err := io.ReadFull(infile, buf)
+	for {
+		c, err := io.ReadFull(infile, buf)
 
-								bytes := []byte(buf[:l])
+		bytes := []byte(buf[:c])
 
-								if err == io.EOF {
-												os.Exit(0)
-								}
+		if err == io.EOF {
+			os.Exit(0)
+		}
+		if err != nil && err != io.ErrUnexpectedEOF {
+			log.Fatal(err)
+		}
 
-								//		if err == io.ErrUnexpectedEOF {
-								// fmt.Printf("L is: %d, ", l)
-								// fmt.Printf("the buf is: %d\n", len(buf))
-								//}
+		fmt.Printf("%04d ", row)
+		row += 1
 
-								if err != nil && err != io.ErrUnexpectedEOF {
-												log.Fatal(err)
-								}
-
-								fmt.Printf("%04d ", row)
-								row += 1
-
-								for _, b := range bytes {
-												fmt.Printf("0x%02X ", b)
-								}
-								fmt.Println()
-				}
+		for _, b := range bytes {
+			fmt.Printf("0x%02X ", b)
+		}
+		fmt.Println()
+	}
 }
