@@ -2,4 +2,7 @@
 
 A hexdump implementation in Go.
 
-Use as an example of learning the language.
+Used as an example for learning the language.
+
+## Info
+- [ASCII table reference](https://www.ascii-code.com/)
