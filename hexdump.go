@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 )
 
 var (
@@ -13,7 +14,7 @@ var (
 	fUsage = "Enter the filename to process"
 	nWidth int
 	wUsage = "[Optional:] Characters to display"
-	row    = 0
+	offset = 0
 	s      string
 )
 
@@ -28,13 +29,14 @@ func init() {
 func printHeader(width int) {
 
 	// Print a header
-	fmt.Printf("%-5s", "Row")
+	fmt.Printf("%-7s", "Offset")
 	for i := 0; i < width; i++ {
 		fmt.Printf("%04X ", i)
 	}
 	fmt.Println()
 
-	for i := 0; i < width+1; i++ {
+	fmt.Printf("%s ", "------")
+	for i := 0; i < width; i++ {
 		fmt.Printf("%4s ", "----")
 	}
 	fmt.Println()
@@ -79,21 +81,32 @@ func main() {
 			log.Fatal(err)
 		}
 
-		fmt.Printf("%04d ", row)
-		row += 1
-
+		xText := make([]string, 0, nWidth)
+		var x string
 		for i, b := range bytes {
-			fmt.Printf("0x%02X ", b)
+			x = fmt.Sprintf("0x%02X", b)
+			xText = append(xText, x)
 
-			if b < 33 || b > 126 {
+			if b < 32 || b > 126 {
 				s = "."
 			} else {
 				s = string(b)
 			}
 			sText[i] = s
-
 		}
-		fmt.Printf("%s", sText)
+
+		// Adjust buffer length to width boundary
+		if len(xText) < nWidth {
+			n := nWidth - len(xText)
+			for i := 0; i < n; i++ {
+				xText = append(xText, "    ")
+			}
+		}
+
+		hexT := strings.Trim(fmt.Sprintf("%s", xText), "[]")
+		stringT := strings.Trim(fmt.Sprintf("%s", sText), "[]")
+		fmt.Printf("%06x %s |%s|", offset, hexT, stringT)
 		fmt.Println()
+		offset += 1 * nWidth
 	}
 }
