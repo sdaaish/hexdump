@@ -98,14 +98,17 @@ func main() {
 		// Adjust buffer length to width boundary
 		if len(xText) < nWidth {
 			n := nWidth - len(xText)
+      sText = sText[:len(xText)]
 			for i := 0; i < n; i++ {
 				xText = append(xText, "    ")
+				sText = append(sText, " ")
 			}
 		}
 
 		hexT := strings.Trim(fmt.Sprintf("%s", xText), "[]")
-		stringT := strings.Trim(fmt.Sprintf("%s", sText), "[]")
-		fmt.Printf("%06x %s |%s|", offset, hexT, stringT)
+		sText := strings.TrimPrefix(fmt.Sprintf("%s", sText), "[")
+		sText = strings.TrimSuffix(fmt.Sprintf("%s", sText), "]")
+		fmt.Printf("%06x %s |%s|", offset, hexT, sText)
 		fmt.Println()
 		offset += 1 * nWidth
 	}
